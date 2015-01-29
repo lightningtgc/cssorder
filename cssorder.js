@@ -1,8 +1,7 @@
 ﻿var CSSComb = require('csscomb');
 var fs      = require('fs');
-var path    = require('path');
 
-var PATH_CONFIG = '/config/config.json';
+var PATH_CONFIG = './config/config.json';
 
 /**
  * preHandleSrc
@@ -112,12 +111,11 @@ function afterHandleSrc (content) {
  * @return {undefined}
  */
 function CSSOrder = function(config) {
-    var path = path.join(process.cwd(), PATH_CONFIG);
 
     // Set custom configure translate to object
     if (!config) {
         try {
-            config = JSON.parse(fs.readFileSync(path, 'utf8'));
+            config = require(PATH_CONFIG);
         } catch(e) {
             throw new Error('CSSOrder:Parse default config error.');
         }
