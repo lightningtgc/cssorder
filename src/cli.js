@@ -11,7 +11,7 @@ var vow = require('vow');
 var CSSOrder = require('./cssorder');
 
 program
-    .version(require('./package.json').version)
+    .version(require('../package.json').version)
     .usage('[options] <file ...>')
     .option('-v, --verbose', 'verbose mode')
     .option('-c, --config [path]', 'configuration file path')

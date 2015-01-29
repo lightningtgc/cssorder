@@ -11,12 +11,12 @@
   "dependencies": {
     "csscomb": "~3.0.4"
   },
-  "main": "./cssorder.js",
+  "main": "./src/cssorder.js",
   "bin": {
     "cssorder": "./bin/cssorder"
   },
   "files": [
     "bin",
-    "config"
+    "src"
   ]
 }
