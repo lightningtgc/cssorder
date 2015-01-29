@@ -110,7 +110,7 @@ function afterHandleSrc (content) {
  * @param {string || object} config
  * @return {undefined}
  */
-function CSSOrder = function(config) {
+var CSSOrder = function(config) {
 
     // Set custom configure translate to object
     if (!config) {
