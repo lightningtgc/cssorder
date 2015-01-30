@@ -149,4 +149,11 @@ var CSSOrder = function(config) {
     return cssComb;
 }
 
+// extend CSSComb to CSSOrder
+for (var key in CSSComb) {
+    if (Object.prototype.hasOwnPrototype.call(CSSComb, key)) {
+        CSSOrder[key] = CSSComb[key]; 
+    }
+}
+
 module.exports = CSSOrder;
