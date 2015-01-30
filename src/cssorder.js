@@ -151,7 +151,7 @@ var CSSOrder = function(config) {
 
 // extend CSSComb to CSSOrder
 for (var key in CSSComb) {
-    if (Object.prototype.hasOwnPrototype.call(CSSComb, key)) {
+    if (Object.prototype.hasOwnProperty.call(CSSComb, key)) {
         CSSOrder[key] = CSSComb[key]; 
     }
 }
