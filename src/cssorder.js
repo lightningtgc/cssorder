@@ -10,7 +10,8 @@ var PATH_CONFIG = './config/config.json';
  * @param cssSrc
  * @return string
  */
-function preHandleSrc(cssSrc) {
+function preHandleSrc(cssSrc, options) {
+  options = options || {};
   /* 
    * Fix like: .a{ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e6529dda', endColorstr='#e6529dda', GradientType=0)\9;}
    * which has two semicolon( : ) will cause parse error.
@@ -29,47 +30,51 @@ function preHandleSrc(cssSrc) {
    * .a { background: url("data:image/png;base64,iVBOMVEX///////////////+g0jAqu8zdII=");} 
    *
    */
-  cssSrc = cssSrc.replace(/data[\s\S]+?\)/g, function(match){
+  cssSrc = cssSrc.replace(/data(\:)[\s\S]+?\)/g, function(match){
       match = match.replace(/:/g, '#order3#');
       match = match.replace(/;/g, '#order4#');
       match = match.replace(/\//g, '#order5#');
       return match;
   });
 
-  /*
-   * Fix multiple line comment include single comment //
-   * eg: / * sth // another * /
-   */
-  cssSrc = cssSrc.replace(/\/\*[\s\S]+?\*\//g, function(match){
-      // handle single comment //
-      match = match.replace(/\/\//g, '#order6#');
-      return  match;
-  });
+  //Just css will handle single comment //
+  if(options.syntax == 'css'){ 
+      /*
+       * Fix multiple line comment include single comment //
+       * eg: / * sth // another * /
+       */
+      cssSrc = cssSrc.replace(/\/\*[\s\S]+?\*\//g, function(match){
+          // handle single comment //
+          match = match.replace(/\/\//g, '#order6#');
+          return  match;
+      });
 
-  /*
-   * Fix single comment like:  // something 
-   * It can't works in IE, and will cause parse error
-   * update: handle single line for compressive case
-   */
-  cssSrc = cssSrc.replace(/(^|[^:|'|"|\(])\/\/.+?(?=\n|\r|$)/g, function(match){
+      /*
+       * Fix single comment like:  // something 
+       * It can't works in IE, and will cause parse error
+       * update: handle single line for compressive case
+       */
+      cssSrc = cssSrc.replace(/(^|[^:|'|"|\(])\/\/.+?(?=\n|\r|$)/g, function(match){
 
-      // Handle compressive file
-      if (match.indexOf('{') === -1 || match.indexOf('}') === -1 || match.indexOf(':') === -1) {
-          var targetMatch;
+          // Handle compressive file
+          if (match.indexOf('{') === -1 || match.indexOf('}') === -1 || match.indexOf(':') === -1) {
+              var targetMatch;
 
-          //Handle first line
-          if (match.charAt(0) !== '/' ) {
-              // Remove first string and / and \ 
-              targetMatch = match.substr(1).replace(/\\|\//g, '');
-              return match.charAt(0) + '/*' + targetMatch + '*/';
+              //Handle first line
+              if (match.charAt(0) !== '/' ) {
+                  // Remove first string and / and \ 
+                  targetMatch = match.substr(1).replace(/\\|\//g, '');
+                  return match.charAt(0) + '/*' + targetMatch + '*/';
+              } else {
+                  targetMatch = match.replace(/\\|\//g, '');
+                  return '/*' + targetMatch + '*/';
+              }
           } else {
-              targetMatch = match.replace(/\\|\//g, '');
-              return '/*' + targetMatch + '*/';
+              throw new Error('There maybe some illegal single comment // in this file.');
           }
-      } else {
-          throw new Error('There maybe some illegal single comment // in this file.');
-      }
-  });
+      });
+
+  }
   return cssSrc;
 }
 
@@ -133,7 +138,7 @@ var CSSOrder = function(config) {
      */
     cssComb.processText = function(text, options){
         var content = '';
-        text = preHandleSrc(text);
+        text = preHandleSrc(text, options);
         content = cssComb.processString(text, options);
         content = afterHandleSrc(content);
 
@@ -157,3 +162,4 @@ for (var key in CSSComb) {
 }
 
 module.exports = CSSOrder;
+
